@@ -85,9 +85,3 @@ def create_note(note: NoteCreate) -> Note:
     save_notes(notes_db)
 
     return new_note
-
-@app.get("/notes")
-def list_notes() -> list[Note]:
-    """Get a list of all notes"""
-    notes_db, _ = load_notes()
-    return notes_db
