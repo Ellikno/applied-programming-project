@@ -3,6 +3,7 @@
     "id": 1,
     "title": "Kuchen",
     "content": "Karotte",
+    "category": "Essen",
     "created_at": "2026-04-28T09:55:10.798009+00:00"
   }
 ]
