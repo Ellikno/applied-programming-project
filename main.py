@@ -76,7 +76,7 @@ def create_note(note: NoteCreate) -> Note:
 
     new_note = Note(
         id=note_id_counter,
-        title=note.tile,
+        title=note.title,
         content=note.content,
         created_at=datetime.now(timezone.UTC).isoformat()
 
