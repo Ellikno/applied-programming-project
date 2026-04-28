@@ -30,11 +30,13 @@ app=FastAPI(
 class NoteCreate(BaseModel):
     title:str
     content:str
+    category: str 
 
 class Note(BaseModel):
     id: int
     title: str
     content: str
+    category: str
     created_at: str
 
 NOTES_FILE = Path("data/notes.json")
@@ -78,10 +80,24 @@ def create_note(note: NoteCreate) -> Note:
         id=note_id_counter,
         title=note.title,
         content=note.content,
+        category=note.category,
         created_at=datetime.now(timezone.utc).isoformat()
 
     )
     notes_db.append(new_note)
+    note_id_counter += 1
     save_notes(notes_db)
-
     return new_note
+
+
+############################################
+######  Homework
+############################################
+
+#Categorys eingefügt in class Note(BaseModel)
+
+
+
+
+
+
