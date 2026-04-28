@@ -9,23 +9,9 @@
   {
     "id": 2,
     "title": "Hobbys",
-    "content": "Fu\u00dfball, Joggen, Gym",
-    "category": "Sport",
-    "created_at": "2026-04-28T10:52:38.938098+00:00"
-  },
-  {
-    "id": 3,
-    "title": "Hobbys",
-    "content": "Fusball, Joggen, Gym",
-    "category": "Sport",
-    "created_at": "2026-04-28T10:52:48.074351+00:00"
-  },
-  {
-    "id": 4,
-    "title": "Hobbys",
     "content": "Fussball, Joggen, Gym",
     "category": "Sport",
-    "created_at": "2026-04-28T10:52:54.359084+00:00"
+    "created_at": "2026-04-28T10:52:38.938098+00:00"
   },
   {
     "id": 5,

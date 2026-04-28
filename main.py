@@ -99,6 +99,7 @@ def create_note(note: NoteCreate) -> Note:
 @app.get("/notes/category/{category}")
 def get_notes_by_category(category: str):
     """Get all notes in a specific category"""
+    notes_db, _ = load_notes()
     filtered_notes = []
     
     for note in notes_db:
@@ -107,6 +108,23 @@ def get_notes_by_category(category: str):
     
     return filtered_notes
 
+@app.get("/notes/stats")
+def get_notes_stats():
+    """Get statistics about notes"""
+    notes_db, _ = load_notes()
+    
+    # Count by category
+    categories = {}
+    for note in notes_db:
+        if note.category in categories:
+            categories[note.category] += 1
+        else:
+            categories[note.category] = 1
+    
+    return {
+        "total_notes": len(notes_db),
+        "by_category": categories
+    }
 
 
 
