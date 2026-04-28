@@ -96,7 +96,16 @@ def create_note(note: NoteCreate) -> Note:
 
 #Categorys eingefügt in class Note(BaseModel)
 
-
+@app.get("/notes/category/{category}")
+def get_notes_by_category(category: str):
+    """Get all notes in a specific category"""
+    filtered_notes = []
+    
+    for note in notes_db:
+        if note.category == category:
+            filtered_notes.append(note)
+    
+    return filtered_notes
 
 
 
