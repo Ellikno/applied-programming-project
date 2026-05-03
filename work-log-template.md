@@ -87,28 +87,30 @@ Bei kleinen Fehlermeldungen AI dazugezogen, meistens reicht aber Template durchl
 #### 1. ✅ What did I accomplish?
 
 Wiederholung von grundlegenden Python Kenntnisse wie Datentypen, Funktionen, Dictionaries und Listen - war alles noch ziemlich aktuell im Kopf, aber gut es aufzufrischen
-
-
-
+Create Notes mit eigenen Parametern.
+Kommunikation bzw Abhängigkeit mit dem Json-File - was passiert wenn ich etwas in VSCode ändere auf dem Server und andersrum.
+Wie programmiere ich eigene Notes und rufe diese ab. Im Anschluss daran wie man seine Notes in Kategorien einteilt und ausschließlich diese Kategorie mit den festgelegten anderen Parametern (Title, datetime..) abruft.
+Die Stats der Notes abfragen, indem ich erst die Anzahl der Notes durchzähle (if-schleife) und im Anschluss die Notes by_category ausgebe. So kann ich wenn ich verschiedene Notes für unterschiedliche Themen habe abfragen wieviele es pro Thema bzw. Category sind. Bestimmt kann man im späteren Verlauf noch weitaus mehr abfragen bzw. interessantere Datenabfragen machen.
 
 
 ---
 
 #### 2. 🚧 What challenges did I face?
 
+Überhaupt erstmal in das ganze Thema reinzukommen find ich ziemlich kompliziert da es viel aufeinmal ist. Gerade im Online Unterricht kommt man mitunter nur schwer mit, wenn man andauernd sein Bildschirm switchen muss, schnelle Korrekturen gemacht werden usw.
 
+Ich hatte zu Beginn Probleme damit zu verstehen, wie die ganzen Zusammenhänge sind mit allen Schnittstellen, mit denen wir gerade arbeiten.
 
-
-
+Kleinere Programmierfehler wie zB. das notes_db, _ = load_notes() in die Tasks zu übernehmen war, damit das Programm läuft
+Terminal neu laden nach einer Ausführung war eine kleine Herausforderung, ich konnte da dann immer nicht drauf zugreifen. Str+C hat dann funktioniert um nach einer Änderung wieder uv run.. auszuführen
 
 ---
 
 #### 3. 💡 How did I overcome them?
 
-
-
-
-
+Ausprobieren mit eigenen Kategorien, schauen wie sich die Instanzen gegeneinander beeinflussen.
+Code durchlesen und nach Funktionen/Variablen googeln die ich nicht kannte, um den Code vollumfänglich zu verstehen.
+Wenn es mal überhaupt nicht lief, hab ich meinen Code Gemini gegeben und gefragt wo es happert und mir die Zusammenhänge zwischen der Aufgabe und meinem Code erklären lassen.
 
 ---
 
@@ -116,7 +118,20 @@ Wiederholung von grundlegenden Python Kenntnisse wie Datentypen, Funktionen, Dic
 
 #### 1. ✅ What did I accomplish?
 
+REST API Design Prinzipien kennengelernt – also warum man URLs so aufbaut wie man sie aufbau und was der Unterschied zwischen Path- und Query-Parametern ist.
+Den bestehenden Note API Code von Tag 2 schrittweise erweitert um vollständiges CRUD – also nicht nur erstellen und lesen, sondern jetzt auch updaten und löschen. PUT ersetzt dabei immer die komplette Note, PATCH nur die Felder die man mitschickt, wie bei mir zB. der title.
 
+Tags als neues Feld eingebaut – der Unterschied zu Category ist dass eine Note mehrere Tags haben kann aber nur eine Category. - > neue Möglichkeiten zu filtern/mehr Details einzubringen.
+
+Task 1 – Filter für GET /notes getestet. Category, Suchbegriff und Tag einzeln und kombiniert ausprobiert in /docs. Hab mir dafür gezielt Testnotizen mit unterschiedlichen Kategorien und Tags erstellt um alle Kombinationen sinnvoll durchzutesten.
+
+Task 2 – Statistik-Endpoint ausgebaut. Hab collections.Counter aus der Python Standardbibliothek dazugezogen – das war neu für mich. Counter zählt automatisch wie oft ein Wert vorkommt, was das Zählen von Kategorien und Tags deutlich kürzer macht als mit einer manuellen if-Schleife.
+
+Task 3 – Zwei neue Ressourcen gebaut: /categories gibt alle einzigartigen Kategorien zurück, /categories/{category_name}/notes filtert die Notes nach Kategorie. Das Prinzip hab ich von den Tag-Endpoints aus der Stunde übernommen und auf Kategorien angewendet. Hab dabei set() verwendet weil ein Set automatisch Duplikate rausfiltert – dafür musste ich etwas recherchieren, weil mir der Unterschied zwischen set und list bzw. wann diese eher zur Anwendung kommen nicht klar war.
+
+Task 4 – PUT und PATCH Endpoints eingebaut. Für PATCH ein neues Modell NoteUpdate geschrieben wo alle Felder Optional sind – also nicht mitgeschickt werden müssen.
+
+Task 5 – Datumsfilter in GET /notes eingebaut. Zwei neue optionale Parameter created_after und created_before ergänzt. Die Filter lassen sich außerdem mit allen anderen bestehenden Filtern kombinieren. Etwas blöd daran war, dass ich heute neue Notizen erstellt hatte wegen eines Errors in meiner json Datei, deswegen konnte ich die Filterung nicht wirklich prüfen, da alle dasselbe Erstellungsdatum hatten.
 
 
 
@@ -125,16 +140,28 @@ Wiederholung von grundlegenden Python Kenntnisse wie Datentypen, Funktionen, Dic
 
 #### 2. 🚧 What challenges did I face?
 
+Wie gesagt war meine notes.json Datei zu Beginn beschädigt – es stand irgendwie doppelter JSON Inhalt drin was einen JSON decode error ausgelöst hat bei jedem POST Request. War schwer nachzuvollziehen woran es liegt weil der Fehler sehr kryptisch war.
 
+In /docs beim Testen hab ich versucht mehrere Notes auf einmal ins Textfeld einzufügen, was nicht geht weil das Feld immer nur eine einzige Note erwartet. Hat dann immer 422 Fehler gegeben.
+Die Reihenfolge der Endpoints im Code war mir nicht bewusst dass sie wichtig ist – /notes/stats muss zum Beispiel vor /notes/{note_id} stehen weil FastAPI sonst denkt "stats" ist eine ID.
 
+Beim Erweitern von GET /notes für Task 5 hab ich den alten Code nicht gelöscht sondern den neuen einfach davor eingefügt. Dadurch war der alte Code ausgegraut weil er nach dem return stand und nie erreicht wird.
 
-
+Optional in Task 4 war am Anfang verwirrend. Generell kommens sehr oft Befehle/Code vor die ich noch nie zuvor gesehen habe.
 
 ---
 
 #### 3. 💡 How did I overcome them?
 
+Die kaputte JSON Datei hab ich gefixt indem ich den Inhalt komplett gelöscht und durch ein leeres Array [] ersetzt habe. DAnn hab ich den Server neu gestartet und die Notes nochmal neu und diesemal einzeln in POST eingegeben.
 
+Beim 422 Fehler durch mehrfache Notes hab ich verstanden dass man in /docs immer nur eine Note pro Execute eingibt und dann wartet bis die Antwort mit ID und Timestamp zurückkommt bevor man die nächste eingibt.
+Die Reihenfolge der Endpoints hab ich durch Ausprobieren und nachfragen verstanden – FastAPI liest den Code von oben nach unten und nimmt den ersten Treffer, deswegen müssen spezifischere Endpoints immer vor den generischen mit {id} stehen.
+
+Den ausgegrauten Code in Task 5 hab ich einfach komplett gelöscht, nachdem ich sicher war, dass mein neuer Code alle Anforderungen erfüllt.
+
+Den Optional Typ und den is not None Check hab ich mir über einen Chatbot erklären lassen.
+Danach bzw. generell hab ich den Code für mich entsprechend kommentiert, damit ich das einerseits nicht vergesse und andererseits auch andere nachvollziehen können was da genau passiert.
 
 
 

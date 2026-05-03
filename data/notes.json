@@ -1,23 +1,62 @@
 [
   {
     "id": 1,
-    "title": "Kuchen",
-    "content": "Karotte",
-    "category": "Essen",
-    "created_at": "2026-04-28T09:55:10.798009+00:00"
+    "title": "Test",
+    "content": "Test",
+    "category": "work",
+    "tags": [
+      "urgent"
+    ],
+    "created_at": "2026-05-01T11:31:14.918895+00:00"
   },
   {
     "id": 2,
-    "title": "Hobbys",
-    "content": "Fussball, Joggen, Gym",
-    "category": "Sport",
-    "created_at": "2026-04-28T10:52:38.938098+00:00"
+    "title": "Team Meeting vorbereiten",
+    "content": "Agenda f\u00fcr das Meeting schreiben",
+    "category": "work",
+    "tags": [
+      "urgent",
+      "meeting"
+    ],
+    "created_at": "2026-05-01T11:33:50.377348+00:00"
+  },
+  {
+    "id": 3,
+    "title": "Einkaufsliste",
+    "content": "Milch, Brot, Eier",
+    "category": "personal",
+    "tags": [
+      "urgent"
+    ],
+    "created_at": "2026-05-01T11:34:05.786610+00:00"
+  },
+  {
+    "id": 4,
+    "title": "Projektplan",
+    "content": "Meilensteine f\u00fcr Q2 definieren",
+    "category": "work",
+    "tags": [
+      "meeting",
+      "Q2"
+    ],
+    "created_at": "2026-05-01T11:34:15.919822+00:00"
   },
   {
     "id": 5,
-    "title": "Exam Prep",
-    "content": "Study chapters 1-5",
-    "category": "study",
-    "created_at": "2026-04-28T14:17:12.189524+00:00"
+    "title": "Sport",
+    "content": "Jeden Tag 30 Minuten laufen",
+    "category": "personal",
+    "tags": [
+      "health"
+    ],
+    "created_at": "2026-05-01T11:34:24.921103+00:00"
+  },
+  {
+    "id": 6,
+    "title": "Just change title",
+    "content": "New",
+    "category": "work",
+    "tags": [],
+    "created_at": "2026-05-01T12:38:27.715466+00:00"
   }
 ]
