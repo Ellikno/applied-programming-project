@@ -133,7 +133,7 @@ Task 4 – PUT und PATCH Endpoints eingebaut. Für PATCH ein neues Modell NoteUp
 
 Task 5 – Datumsfilter in GET /notes eingebaut. Zwei neue optionale Parameter created_after und created_before ergänzt. Die Filter lassen sich außerdem mit allen anderen bestehenden Filtern kombinieren. Etwas blöd daran war, dass ich heute neue Notizen erstellt hatte wegen eines Errors in meiner json Datei, deswegen konnte ich die Filterung nicht wirklich prüfen, da alle dasselbe Erstellungsdatum hatten.
 
-
+Task 6- Alle bisher bestehenden Notizen in eine Datenbank überführt, und dafür den gesamten Code überarbeitet, sodass die JSON Logik verschwindet und die der DB einfließt.
 
 
 ---
@@ -149,6 +149,10 @@ Beim Erweitern von GET /notes für Task 5 hab ich den alten Code nicht gelöscht
 
 Optional in Task 4 war am Anfang verwirrend. Generell kommens sehr oft Befehle/Code vor die ich noch nie zuvor gesehen habe.
 
+In Task 6 fand ich die komplette Dokumentation der einzelnen Schritte leider zu wenig beschrieben, was unnötig viel Zeit gefressen hat. Ich wusste oft nicht was ich genau machen soll und was der Code den ich reinkopieren soll bedeutet. Außerdem war es schwer nachzuvollziehen wo neuer Code genau hingehört, damit man nicht von Fehlermeldungen wie xy ist nicht definiert überhäuft wurde.
+Zudem fand ich es schwierig zu wissen was ich mit meinen alten Notizen machen soll, die den vorherigen Code erklärt haben.
+
+
 ---
 
 #### 3. 💡 How did I overcome them?
@@ -162,6 +166,10 @@ Den ausgegrauten Code in Task 5 hab ich einfach komplett gelöscht, nachdem ich 
 
 Den Optional Typ und den is not None Check hab ich mir über einen Chatbot erklären lassen.
 Danach bzw. generell hab ich den Code für mich entsprechend kommentiert, damit ich das einerseits nicht vergesse und andererseits auch andere nachvollziehen können was da genau passiert.
+
+Für Task 6 war ich leider ziemlich sehr auf die Hilfe von LLMs angewiesen die mir den Code erklären und wo ich ihn einfügen muss. Nach ein paar Stunden konnte ich den Aufbau und warum man was macht dann doch relativ gut nachvollziehen.
+Um zukünftig besser klarzukommen hab ich den gesamten Aufbau dann nochmal verändert und neu kommentiert, damit alles deutlich übersichtlicher für mich ist.
+Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll sich erstmal alle einzelnen Steps anzuschauen und zu verstehen um die spätere Integration im Code sinnvoller zu gestalten bzw. sich im Kopf schon mal Verknüpfungen zu machen wo welcher Codeblock Sinn macht einzufügen.
 
 
 

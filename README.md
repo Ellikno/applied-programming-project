@@ -2,7 +2,7 @@
 
 {
   "title": "Team Meeting vorbereiten",
-  "content": "Agenda für das Meeting schreiben",
+  "content": "Agenda fuer das Meeting schreiben",
   "category": "work",
   "tags": ["urgent", "meeting"]
 }
@@ -16,7 +16,7 @@
 
 {
   "title": "Projektplan",
-  "content": "Meilensteine für Q2 definieren",
+  "content": "Meilensteine fuer Q2 definieren",
   "category": "work",
   "tags": ["meeting", "Q2"]
 }
