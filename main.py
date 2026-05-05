@@ -16,28 +16,27 @@ app=FastAPI(
 #########################################
 ##### Database Models & Configuration
 #########################################
-# NEU: Definition der Datenbank-Tabellen und Beziehungen
+# Definition der Datenbank-Tabellen und Beziehungen
+#Anderes Setup als in den Folien zu Präsentation Day 3, da das angegebene nicht funktioniert hat (Hat wohl etwas mit der Version von SQL zu tun.)
+
+class NoteTagLink(SQLModel, table=True):
+    note_id: Optional[int] = Field(default=None, foreign_key="notes.id", primary_key=True)
+    tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
 
 class Note(SQLModel, table=True):
     __tablename__ = 'notes'
-    
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     content: str
     category: str
     created_at: datetime = Field(default_factory=datetime.now)
-    
-    # Many-to-many relationship with Tag (implicit link table)
-    tags: list["Tag"] = Relationship(back_populates="notes")
+    tags: list["Tag"] = Relationship(back_populates="notes", link_model=NoteTagLink)
 
 class Tag(SQLModel, table=True):
     __tablename__ = 'tags'
-    
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(unique=True, index=True)  # Unique tag name
-    
-    # Many-to-many relationship with Note (implicit link table)
-    notes: list[Note] = Relationship(back_populates="tags")
+    name: str = Field(unique=True, index=True)
+    notes: list[Note] = Relationship(back_populates="tags", link_model=NoteTagLink)
 
 # Create database engine
 engine = create_engine("sqlite:///notes.db")
@@ -57,7 +56,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 ##### API Schemas (Pydantic Models)
 #########################################
 # Task 6 Step 3 und 4:
-# NEU: Definition der Datenstrukturen für API-Anfragen und -Antworten
+# Definition der Datenstrukturen für API-Anfragen und Antworten
 
 # API Input model
 class NoteCreate(BaseModel):
@@ -89,7 +88,7 @@ class NoteResponse(BaseModel):
 #########################################
 ##### Legacy JSON Storage (Day 2)
 #########################################
-# NEU: Hilfsfunktionen für die ursprüngliche JSON-basierte Speicherung
+#Hilfsfunktionen für die ursprüngliche JSON-basierte Speicherung
 
 NOTES_FILE = Path("data/notes.json")
 
@@ -295,7 +294,7 @@ def delete_note(note_id: int, session: SessionDep):
 #########################################
 ##### Tag & Category Endpoints
 #########################################
-# NEU: Endpunkte zur Verwaltung von Tags und Kategorien
+#Endpunkte zur Verwaltung von Tags und Kategorien
 
 #Task 6 Step 8: Tag Endpoints hinzufügen
 @app.get("/tags")
@@ -333,60 +332,55 @@ def get_notes_by_tag(tag_name: str, session: SessionDep) -> list[NoteResponse]:
 
 # Task 3: Categories Resource
 @app.get("/categories")
-def list_categories() -> list[str]:
-    """Get all unique categories from all notes"""
-    notes_db, _ = load_notes()
+def list_categories(session: SessionDep) -> list[str]:
+    notes = session.exec(select(Note)).all()
     
-    # Collect unique categories
     categories = set()
-    for note in notes_db:
+    for note in notes:
         categories.add(note.category)
     
-    # Return sorted list
     return sorted(list(categories))
 #Gibt eine Liste aus, in der jede Kategorie unabhänig davon wie oft sie existiert
 #nur einmal ausgegeben wird -> ich sehe welche Kategorien es gibt!
 
 @app.get("/categories/{category_name}/notes")
-def get_notes_by_category_resource(category_name: str) -> list[Note]:
-    """Get all notes in a specific category"""
-    notes_db, _ = load_notes()
+def get_notes_by_category_resource(category_name: str, session: SessionDep) -> list[NoteResponse]:
+    statement = select(Note).where(Note.category == category_name)
+    notes = session.exec(statement).all()
     
-    # Filter notes by category
-    filtered = []
-    for note in notes_db:
-        if note.category == category_name:
-            filtered.append(note)
-    
-    return filtered
+    return [
+        NoteResponse(
+            id=note.id,
+            title=note.title,
+            content=note.content,
+            category=note.category,
+            tags=[tag.name for tag in note.tags],
+            created_at=note.created_at
+        )
+        for note in notes
+    ]
 #Gibt mir wenn ich nach dem category_name suche alle Notizen aus, die 
 #den gesuchten category_name/die Kategorie x haben. Bei "work" sind das
 #id1,2 und 4
 
 #########################################
-##### Statistics & Legacy Endpoints
+##### Statistics
 #########################################
 
 #Task 2: Statistic Endpoints
 @app.get("/notes/stats")
 def get_notes_stats():
-    """Get statistics about notes"""
     notes_db, _ = load_notes()
 
-    # Count by category
-    #From collections import counter noch oben in die Imports aufgenommen
     category_counts = Counter(note.category for note in notes_db)
 
-    # Collect all tags from all notes
     all_tags = []
     for note in notes_db:
         for tag in note.tags:
             all_tags.append(tag)
 
-    # Count tags
     tag_counts = Counter(all_tags)
 
-    # Top 5 tags formatted
     top_tags = [
         {"tag": tag, "count": count}
         for tag, count in tag_counts.most_common(5)
@@ -403,7 +397,7 @@ def get_notes_stats():
     }
 
 #Homework Day 3 Implication (Task 1-tags + Datumabfrage(Task5)):
-# NEU: Legacy-Endpoint für Notizen-Suche in der JSON-Datei
+#Endpoints für Notizen-Suche in der JSON-Datei
 @app.get("/notes/legacy")
 def list_notes_legacy(
     category: str = None,
@@ -461,7 +455,7 @@ def list_notes_legacy(
     return filtered
 
 #########################################
-##### Lesson Material & Examples
+##### Vorlesung Tag 3
 #########################################
 
 #Lesson Day 3:

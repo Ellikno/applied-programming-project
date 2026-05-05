@@ -182,7 +182,11 @@ Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll
 
 #### 1. ✅ What did I accomplish?
 
-
+- eigene Tests schreiben
+-Struktur von Tests kennengelernt
+requestst, pytests und faker Libraries kennengelernt
+- 200,201,404 usw. noch weiter verinnerlicht
+ausführen von Tests im Terminal und Server wechseln wenn die URL mit anderer Datei verbunden war
 
 
 
@@ -191,7 +195,9 @@ Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll
 
 #### 2. 🚧 What challenges did I face?
 
+Code verstehen
 
+Bonus Challenges für Datenbanken waren mir noch zu hoch, das habe ich nicht verstanden
 
 
 
@@ -200,9 +206,9 @@ Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll
 
 #### 3. 💡 How did I overcome them?
 
+Beispiele aus der Vorlesung angeschaut und die Verknüpfung hergestellt im Kopf
 
-
-
+Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvollziehen warum der Code so aufgebaut ist
 
 
 ---
