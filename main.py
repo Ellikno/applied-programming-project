@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from collections import Counter
 import json
 from pathlib import Path
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator, EmailStr
+from typing_extensions import Self
 
 app=FastAPI(
     title="Applied Programming Course HS Coburg",
@@ -14,14 +16,22 @@ app=FastAPI(
 )
 
 #########################################
-##### Database Models & Configuration
+##### Database Models and Configuration
 #########################################
 # Definition der Datenbank-Tabellen und Beziehungen
 #Anderes Setup als in den Folien zu Präsentation Day 3, da das angegebene nicht funktioniert hat (Hat wohl etwas mit der Version von SQL zu tun.)
 
+
+#Anpassung Day 6 Test
+@app.get("/")
+def root():
+    return {"title": app.title, "version": app.version}
+
+###########################
+
 class NoteTagLink(SQLModel, table=True):
-    note_id: Optional[int] = Field(default=None, foreign_key="notes.id", primary_key=True)
-    tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
+   note_id: Optional[int] = Field(default=None, foreign_key="notes.id", primary_key=True)
+   tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
 
 class Note(SQLModel, table=True):
     __tablename__ = 'notes'
@@ -31,12 +41,35 @@ class Note(SQLModel, table=True):
     category: str
     created_at: datetime = Field(default_factory=datetime.now)
     tags: list["Tag"] = Relationship(back_populates="notes", link_model=NoteTagLink)
+#Zusatzaufgabe Email Day 5 Task "7":
+    author_email: Optional[str] = None
+    priority: int = Field(default=3, ge=1, le=5)
 
+
+#Day 5 Task 5 Validation hinzugefügt für die Tags
 class Tag(SQLModel, table=True):
     __tablename__ = 'tags'
     id: Optional[int] = Field(default=None, primary_key=True)
+    #name muss 2-30 Zeichen haben, Kleinbuchstaben(a-z), Zahlen(0-9) und Bindestriche sind erlaubt
     name: str = Field(unique=True, index=True)
     notes: list[Note] = Relationship(back_populates="tags", link_model=NoteTagLink)
+
+    @field_validator("name")
+    @classmethod
+    def allowed_name(cls, value: str) -> str:
+        #Erst trimmen und lowercase machen
+        normalized = value.strip().lower()
+        #Dann prüfen ob das Pattern passt - nur a-z, 0-9 und Bindestriche erlaubt
+        import re
+        if not re.match(r"^[a-z0-9-]+$", normalized):
+            raise ValueError("Tag name darf nur Kleinbuchstaben, Zahlen und Bindestriche enthalten")
+        #Mindest- und Maximallänge prüfen
+        if len(normalized) < 2:
+            raise ValueError("Tag name muss mindestens 2 Zeichen haben")
+        if len(normalized) > 30:
+            raise ValueError("Tag name darf maximal 30 Zeichen haben")
+        return normalized
+
 
 # Create database engine
 engine = create_engine("sqlite:///notes.db")
@@ -51,27 +84,106 @@ def get_session():
 
 # Type alias for cleaner code
 SessionDep = Annotated[Session, Depends(get_session)]
+#FastAPI will automatically:
+    #Create a new session for each request
+    #Close the session when done
+    #Handle database transactions
 
 #########################################
 ##### API Schemas (Pydantic Models)
 #########################################
-# Task 6 Step 3 und 4:
+# Day 3 Task 6 Step 3 und 4:
 # Definition der Datenstrukturen für API-Anfragen und Antworten
-
 # API Input model
-class NoteCreate(BaseModel):
-    title: str
-    content: str
-    category: str
-    tags: list[str] = []
+# Day 5 Task 1-2: Validation Grenzen bzw. Regeln für die Eingaben in
+#Title, Categories und Tags festgelegt
 
-# Task 4: PATCH Endpoint, Überarbeitung
+ALLOWED_CATEGORIES = {"work", "personal", "school", "study", "ideas", "general"}
+class NoteCreate(BaseModel):
+    model_config= ConfigDict(
+        str_strip_whitespace=True, #Strings werden automatisch getrimmt zB. "  Brot  " -> "Brot"
+        extra="forbid" #unbekannte Angaben werden abgelehnt
+    )
+    title: str = Field(min_length=3, max_length=100)
+    content: str = Field(min_length=1, max_length=10_000)
+    category: str = Field(min_length=2, max_length=30)
+    tags: list[str] = Field(default_factory=list, max_length=10)
+#Zusatzaufgabe Email Day 5 Task "7":
+    author_email: EmailStr | None=None
+    priority: int = Field(default=3, ge=1, le=5)
+
+# Lehnt Titel ab, die nur aus Leerzeichen bestehen und Titel muss >3 sein nach dem Trimmen
+    @field_validator("title")
+    @classmethod
+    def title_not_only_whitespace(cls, value: str) -> str:
+        # Nach dem Trimmen muss noch mindestens 3 Zeichen übrig sein
+        if len(value.strip()) < 3:
+            raise ValueError("Titel darf nicht nur aus Leerzeichen bestehen")
+        return value
+
+#Beschränkt die erlaubten Kategorien auf die Angaben innerhalb von "ALLOWED_CATEGORIES"
+    @field_validator("category")
+    @classmethod
+    def category_must_be_known(cls, value: str) -> str:
+        # Erst lowercase machen, dann prüfen
+        normalized = value.strip().lower()
+        if normalized not in ALLOWED_CATEGORIES:
+            raise ValueError(
+                f"category muss eine der folgenden sein: {sorted(ALLOWED_CATEGORIES)}"
+            )
+        return normalized
+
+
+    @field_validator("tags")
+    @classmethod
+    def clean_tags(cls, raw: list[str]) -> list[str]:
+        cleaned = []
+        seen = set()
+        for tag in raw:
+            t = tag.strip().lower()
+            # Leere Tags werden abgelehnt
+            if not t:
+                raise ValueError("Tags dürfen keine leeren Strings sein")
+            # Tags kürzer als 2 Zeichen ablehnen
+            if len(t) < 2:
+                raise ValueError("Tags müssen mindestens 2 Zeichen haben")
+            # Duplikate überspringen/nicht mit aufnehmen in tags
+            if t in seen:
+                continue
+            seen.add(t)
+            cleaned.append(t)
+        return cleaned
+
+#Day 5 Task 3: Model Validator hinzufügen und erklären
+
+    #@model_validator(mode="after")
+    #def work_notes_need_work_tag(self) -> Self:
+        #if self.category == "work" and "work" not in self.tags:
+            #raise ValueError("work notes must include the 'work' tag")
+        #return self 
+#(Im Nachhinein auskommentiert da es für Day 6 Test irrelevant ist und viele Tests failen lässt)
+
+#Erklärung:
+# Da eine Abhängigkeit zwischen zwei Feldern geprüft werden soll (category und tags), wird
+#model_validator benötigt (field prüft immer nur einzelne Felder)
+# Der Model_validator wird erst aufgerufen nachdem alle field Funktionen durch sind (mode="after")
+# Das self erhebt dann die Daten und prüft ob der Zusammenhang zwischen category und tag passt
+
+
+# Day 3 Task 4: PATCH Endpoint, Überarbeitung
+##Update Day5 Task 4: Fields hinzugefügt von Pydantic für Validation /Begrenzung der Eingabedaten
+#(NoteCreate (input) and NoteUpdate (partial input) should share validation.)
+
 class NoteUpdate(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
-    category: Optional[str] = None
-    tags: Optional[list[str]] = None
-#Optional-> wenn es fehlt, isses automatisch None
+    title: str | None = Field(default=None, min_length=3, max_length=100)
+    content: str | None = Field(default=None, min_length=1)
+    category: str | None = None
+    tags: list[str] | None = Field(default=None, max_length=10)
+# Datentyp | None bedeutet: Entweder Datentyp x wie zB. string oder None. 
+#Wenn ein str mitgeschickt wird, greift die Field Regel für zB. den Titel nach dem in der Präsentation
+#erklärten Prinzip: PATCH with {} must succeed (no changes). PATCH with {"title": ""} must return 422 (Field check passt).
+
+
 
 # API Output model
 class NoteResponse(BaseModel):
@@ -81,6 +193,9 @@ class NoteResponse(BaseModel):
     category: str
     tags: list[str]
     created_at: datetime
+#Zusatzaufgabe Email Day 5 Task "7":
+    priority: int
+    author_email: str | None
     
     class Config:
         from_attributes = True
@@ -132,7 +247,10 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
     db_note = Note(
         title=note.title,
         content=note.content,
-        category=note.category
+        category=note.category,
+        priority=note.priority,  #Zusatzaufgabe Email Day 5 Task "7",
+        #Beim erstellen der Note kann der Autor angeben wie wichtig(Weltuntergang) oder unwichtig(Kaffeebohnen leer) die Notiz ist
+        author_email=note.author_email #Zusatzaufgabe Email Day 5 Task "7"
     )
     
     # Get or create tags (case-insensitive, deduplicated)
@@ -170,7 +288,9 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
         content=db_note.content,
         category=db_note.category,
         tags=[tag.name for tag in db_note.tags],
-        created_at=db_note.created_at.isoformat()
+        created_at=db_note.created_at.isoformat(),
+        priority=db_note.priority,
+        author_email=db_note.author_email
     )
 
 #app.get überarbeitet/neu eingefügt für Task 6 Step 6: Query Database with Filters
@@ -179,10 +299,11 @@ def list_notes(
     session: SessionDep,
     category: str = None,
     search: str = None,
-    tag: str = None
+    tag: str = None,
+    created_after: datetime = None,   #Implementierung Day 6 Test
+    created_before: datetime = None   #Implementierung Day 6 Test
 ) -> list[NoteResponse]:
-    """List notes with filters"""
-    
+
     # Build query
     statement = select(Note)
     
@@ -205,6 +326,11 @@ def list_notes(
     
     # Execute query
     notes = session.exec(statement).all()
+
+    if created_after:
+        notes = [n for n in notes if n.created_at >= created_after]
+    if created_before:
+        notes = [n for n in notes if n.created_at <= created_before]
     
     # Convert to response models
     return [
@@ -214,12 +340,46 @@ def list_notes(
             content=n.content,
             category=n.category,
             tags=[tag.name for tag in n.tags],
-            created_at=n.created_at.isoformat()
+            created_at=n.created_at, priority=n.priority, 
+            author_email=n.author_email
         )
         for n in notes
     ]
 
-#Task 6 Step 7: Überarbeitung der Endpoints
+
+
+#Day 3 Task 2: Statistic Endpoints angelegt
+# und auf Datenbank umgestellt
+@app.get("/notes/stats")
+def get_notes_stats(session: SessionDep):
+    notes = session.exec(select(Note)).all()
+
+    category_counts = Counter(note.category for note in notes)
+
+    all_tags = []
+    for note in notes:
+        for tag in note.tags:
+            all_tags.append(tag.name)
+
+    tag_counts = Counter(all_tags)
+
+    top_tags = [
+        {"tag": tag, "count": count}
+        for tag, count in tag_counts.most_common(5)
+    ]
+
+    return {
+        "total_notes": len(notes),
+        "by_category": dict(category_counts),
+        "top_tags": top_tags,
+        "unique_tags_count": len(tag_counts)
+
+    #zählt alle Notizen, Notizen pro Kategorie, Welche tags am häufigsten vorkommen
+    # wie viele verschiedene tags es überhaupt gibt
+    }
+
+
+#Day 3 Task 6 Step 7: Überarbeitung der Endpoints
 @app.get("/notes/{note_id}")
 def get_note(note_id: int, session: SessionDep) -> NoteResponse:
     note = session.get(Note, note_id)
@@ -231,7 +391,9 @@ def get_note(note_id: int, session: SessionDep) -> NoteResponse:
         content=note.content,
         category=note.category,
         tags=[tag.name for tag in note.tags],
-        created_at=note.created_at
+        created_at=note.created_at,
+        priority=note.priority,        
+        author_email=note.author_email
     )
 
 @app.put("/notes/{note_id}")
@@ -242,6 +404,26 @@ def update_note(note_id: int, note_update: NoteCreate, session: SessionDep) -> N
     note.title = note_update.title
     note.content = note_update.content
     note.category = note_update.category
+    note.priority = note_update.priority
+    note.author_email = note_update.author_email
+
+#Implementierung Day 6 Test: Tags ergänzen
+    tag_objects = []
+    seen_tags = set()
+    for tag_name in note_update.tags:
+        tag_name_lower = tag_name.lower().strip()
+        if not tag_name_lower or tag_name_lower in seen_tags:
+            continue
+        seen_tags.add(tag_name_lower)
+        existing_tag = session.exec(select(Tag).where(Tag.name == tag_name_lower)).first()
+        tag_objects.append(existing_tag if existing_tag else Tag(name=tag_name_lower))
+    note.tags = tag_objects
+
+
+
+
+
+
     session.add(note)
     session.commit()
     session.refresh(note)
@@ -251,7 +433,9 @@ def update_note(note_id: int, note_update: NoteCreate, session: SessionDep) -> N
         content=note.content,
         category=note.category,
         tags=[tag.name for tag in note.tags],
-        created_at=note.created_at
+        created_at=note.created_at,
+        priority=note.priority,          
+        author_email=note.author_email  
     )
 
 @app.patch("/notes/{note_id}")
@@ -265,6 +449,21 @@ def partial_update_note(note_id: int, note_update: NoteUpdate, session: SessionD
         note.content = note_update.content
     if note_update.category is not None:
         note.category = note_update.category
+
+#Implementierung Day 6 Test: Tags ersetzen wenn sie mitgeschickt werden.
+
+    if note_update.tags is not None:
+        tag_objects = []
+        seen_tags = set()
+        for tag_name in note_update.tags:
+            tag_name_lower = tag_name.lower().strip()
+            if not tag_name_lower or tag_name_lower in seen_tags:
+                continue
+            seen_tags.add(tag_name_lower)
+            existing_tag = session.exec(select(Tag).where(Tag.name == tag_name_lower)).first()
+            tag_objects.append(existing_tag if existing_tag else Tag(name=tag_name_lower))
+        note.tags = tag_objects
+
     session.add(note)
     session.commit()
     session.refresh(note)
@@ -274,8 +473,10 @@ def partial_update_note(note_id: int, note_update: NoteUpdate, session: SessionD
         content=note.content,
         category=note.category,
         tags=[tag.name for tag in note.tags],
-        created_at=note.created_at
-    )
+        created_at=note.created_at,
+        priority=note.priority,         
+        author_email=note.author_email 
+)
 #nur die Überarbeiteten werden mitgeschickt,also für den Fall,
 #dass es nicht None ist, wird es überschrieben
 
@@ -325,7 +526,9 @@ def get_notes_by_tag(tag_name: str, session: SessionDep) -> list[NoteResponse]:
             content=note.content,
             category=note.category,
             tags=[t.name for t in note.tags],
-            created_at=note.created_at
+            created_at=note.created_at,
+            priority=note.priority,        
+            author_email=note.author_email
         )
         for note in tag.notes
     ]
@@ -355,7 +558,9 @@ def get_notes_by_category_resource(category_name: str, session: SessionDep) -> l
             content=note.content,
             category=note.category,
             tags=[tag.name for tag in note.tags],
-            created_at=note.created_at
+            created_at=note.created_at,
+            priority=note.priority,         
+            author_email=note.author_email
         )
         for note in notes
     ]
@@ -367,34 +572,6 @@ def get_notes_by_category_resource(category_name: str, session: SessionDep) -> l
 ##### Statistics
 #########################################
 
-#Task 2: Statistic Endpoints
-@app.get("/notes/stats")
-def get_notes_stats():
-    notes_db, _ = load_notes()
-
-    category_counts = Counter(note.category for note in notes_db)
-
-    all_tags = []
-    for note in notes_db:
-        for tag in note.tags:
-            all_tags.append(tag)
-
-    tag_counts = Counter(all_tags)
-
-    top_tags = [
-        {"tag": tag, "count": count}
-        for tag, count in tag_counts.most_common(5)
-    ]
-
-    return {
-        "total_notes": len(notes_db),
-        "by_category": dict(category_counts),
-        "top_tags": top_tags,
-        "unique_tags_count": len(tag_counts)
-
-    #zählt alle Notizen, Notizen pro Kategorie, Welche tags am häufigsten vorkommen
-    # wie viele verschiedene tags es überhaupt gibt
-    }
 
 #Homework Day 3 Implication (Task 1-tags + Datumabfrage(Task5)):
 #Endpoints für Notizen-Suche in der JSON-Datei
@@ -485,3 +662,6 @@ def queryparameters(param1: str=None, param2: int=None) -> dict:
         "param2":param2,
         "namen":namen_gefiltert
     }
+
+#Passende Restriktionen einbauen aus Day 5 Präsi
+

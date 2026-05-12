@@ -1,6 +1,6 @@
 # Work Log
 
-**Student Name:** 
+**Student Name: Elias Knoch**
 
 Instructions: Fill out one log for each course day. Content to consider: Course Sessions + Assignment
 
@@ -182,34 +182,28 @@ Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll
 
 #### 1. ✅ What did I accomplish?
 
-- eigene Tests schreiben
--Struktur von Tests kennengelernt
-requestst, pytests und faker Libraries kennengelernt
-- 200,201,404 usw. noch weiter verinnerlicht
-ausführen von Tests im Terminal und Server wechseln wenn die URL mit anderer Datei verbunden war
 
+Heute habe ich hauptsächlich gelernt wie der Code für Tests aufgebaut ist, und wie man Tests für ein bestehendes Programm schreibt, um zu prüfen wie gut es gegen Dinge wie Grenzfälle/falsche Angaben des Nutzers etc. abgesichert ist. 
 
+Für unsere Anwendungsfälle waren die Libraries pytest,requests und faker wichtig, deren Funktionen ich durch das testen/anwenden verstehen konnte. Zudem konnte ich durch das testen die Statuscodes 200,201,404 und 422 noch einmal verinnerlichen. Darüber hinaus habe ich etwas error handling dazu gelernt durch die aufgetretenen Fehlermeldungen sowie das arbeiten im Terminal (in einem läuft der Server, in einem zweiten lässt man die Tests durchlaufen)
 
 
 ---
 
 #### 2. 🚧 What challenges did I face?
 
-Code verstehen
+Der schwierigste Teil war definitiv erstmal die Beispieltests bzw. den Code zu verstehen, da Code wie assert, oder requests noch neu für mich waren. 
 
-Bonus Challenges für Datenbanken waren mir noch zu hoch, das habe ich nicht verstanden
-
-
+Auch das Zusammenspiel zwischen dem laufenden Server, der Testdatei und dem Terminal waren zuerst einmal unklar. So kam es Beispielsweise mehrmals zu dem Problem, dass die Tests alle gefailed haben, weil noch der Server aus einer Vorlesung geprüft wurde und nicht mein main.py.
 
 
 ---
 
 #### 3. 💡 How did I overcome them?
 
-Beispiele aus der Vorlesung angeschaut und die Verknüpfung hergestellt im Kopf
-
-Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvollziehen warum der Code so aufgebaut ist
-
+Ich habe viel mit den Beispielen aus den Präsentationsfolien gearbeietet und versucht die Beispiele nachzuvollziehen und im Anschluss auf meine Fälle anzuwenden. Dabei hat mir geholfen erstmal mit sehr einfachen Tests zu starten und mich dann graduell zu steigern.
+Begriffe wie assert oder requests habe ich separat nachgeschlagen oder mir den Zusammenhang des Testcodes mit meiner main.py von einem LLM erklären lassen.
+Besonders geholfen hat mir zudem einfach bewusst falsche Eingaben zu machen, um zu schauen ob die von mir erwarteten Statuscodes und Fehlermeldungen zurückkommen.
 
 ---
 
@@ -217,7 +211,15 @@ Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvol
 
 #### 1. ✅ What did I accomplish?
 
+Heute hab ich gelernt, wie man sicherstellt dass die API nur sinnvolle Daten annimmt und schlechte Eingaben direkt ablehnt, bevor sie überhaupt in die Datenbank kommen.
+Konkret hab ich gelernt wie man mit Field() einfache Grenzen setzt wie Mindest- und Maximallängen für Felder wie title, content, category und tags. 
+Darüber hinaus hab ich eigene Validierungsregeln mit @field_validator geschrieben – zum Beispiel dass der Titel nach dem Trimmen noch mindestens 3 Zeichen haben muss, dass nur bestimmte Kategorien erlaubt sind, und dass Tags automatisch in Kleinbuchstaben umgewandelt werden usw.
+Mit dem model_validator hab ich dann eine Regel eingebaut die zwei Felder gleichzeitig prüft: wenn die Kategorie "work" ist, muss der Tag "work" mit dabei sein. 
 
+Für das Tag Modell hab ich zusätzlich einen @field_validator eingebaut der sicherstellt dass Tag-Namen nur Kleinbuchstaben, Zahlen und Bindestriche enthalten dürfen. Hier hat mir der Codeaufbau aus der Präsentation mit Pattern nicht funktioniert. Das hab ich dann nach etwas Recherche mit re.match() gelöst wobei ich dann mehrere if-Funktionen benutzt habe um die min und max Länge abzufragen und die erlaubten Zeichen die im Pattern waren abzufragen.
+Außerdem hab ich gelernt dass man in NoteCreate noch eine Email-Funktion über EmailStr einbauen kann, und mit einem priority Feld vom Typ int die Wichtigkeit einer Notiz angeben kann.
+
+Im Anschluss hab ich dann die test_validation.py Datei aus der Präsentation erstellt die alle Validierungsregeln testet und sie mehrmals durchlaufen lassen, nach kleinen Korrekturen haben dann alle Tests gepassed.
 
 
 
@@ -226,18 +228,23 @@ Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvol
 
 #### 2. 🚧 What challenges did I face?
 
-
-
-
+Der schwierigste Teil war der Zusammenhang zwischen NoteCreate, field_validator und model_validator. Ich hab erst nicht verstanden wie der model_validator sich die Daten nimmt die bereits durch den field_validator gelaufen sind. Im Skript fehlte mir eine Erklärung was die importierten Inhalte genau können und wie sie intern funktionieren, was mich etwas verwirrt hat.
+Außerdem war mir bei dem Test test_patch_with_empty_body_succeeds nicht klar was genau getestet wird. Der Name sagt "succeeds" aber ich hab zuerst gedacht das Ziel wäre ein 422 zu provozieren, weil es so in der Präsentation steht? dabei soll ja das Gegenteil eintreffen. Ein leerer PATCH Body soll ja gerade erfolgreich sein weil nichts verändert wird, nicht abgelehnt werden, deswegen hab ich den Test jetzt mit einer 200 response geschrieben.
+Der pattern Parameter in SQLModel's Field hat beim Start einen TypeError geworfen.
+Auch das Löschen der notes.db hat mich Zeit gekostet weil ich nicht sofort verstanden hab warum eine Datenbankstrukturänderung eine frische Datenbank braucht.
 
 
 ---
 
 #### 3. 💡 How did I overcome them?
 
+Den Zusammenhang zwischen field_validator und model_validator hab ich durch Recherche und das konkrete Durcharbeiten eines Beispiels verstanden: field_validator läuft für jedes Feld einzeln, und erst danach bekommt model_validator(mode="after") über self Zugriff auf alle bereits validierten Felder.
 
+Den Testfall test_patch_with_empty_body_succeeds hab ich wie gesagt als 200 response.status_code geschrieben anstatt als 422, ob das richtig ist, weiß ich allerdings nicht. Der Gegensatz dazu, wäre ja eine Rechtmäßige Eingabe eines Titels bzw. eine unrechtmäßige: hier würde dann ein 422 gemeldet, wenn der Titel nach dem trimmen kürzer als 3 Zeichen lang wäre.
 
+Den pattern Bug hab ich gelöst indem ich die Validierung in einen field_validator ausgelagert hab und dort re.match() aus der Python Standardbibliothek verwendet hab. Das hab ich separat nachgeschlagen und dann angewendet.
 
+Generell hat mir wieder geholfen die Fehler im Terminal genau zu lesen und Schritt für Schritt vorzugehen – erst den offensichtlichsten Fehler fixen, Server neu starten, schauen was als nächstes kommt, sowie zwei Terminals nebeneinader zu nutzen beim Testen von test_validation.py
 
 
 ---
@@ -246,9 +253,11 @@ Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvol
 
 #### 1. ✅ What did I accomplish?
 
-
-
-
+Heute hab ich die bestehende API aus den vorherigen Tagen mit dem  Tests aus der Vorlesung von Day 6 laufen lassen und systematisch alle Fehler behoben, bis die Tests durchgelaufen sind.
+Dabei hab ich wieder einzelne Fehlermeldungen festigen können, generell läuft die Fehlerbehbeung deutlich schneller als an Tag 1, weil man an Erfahrung hinzugewonnen hat.
+Außerdem hab ich verstanden, dass die Reihenfolge der Endpoints für den Durchlauf des Tests wichtig ist. Routen wie /notes/stats müssen immer vor Parametern wie /notes/{note_id} stehen, sonst interpretiert FastAPI den String "stats" als eine ID.
+Den Stats-Endpoint hab ich komplett auf die Datenbank umgestellt, weil er vorher noch auf die alte JSON-Datei zugegriffen hat.
+Für PUT und PATCH hab ich die fehlende Tag-Logik nachgezogen, sodass Tags beim Update auch wirklich ersetzt werden und nicht einfach ignoriert werden. Zusätzlich hab ich in allen NoteResponse-Rückgaben die fehlenden Felder aus Day 5 priority und author_email ergänzt, die ich beim Erweitern der Endpoints vergessen hatte mitzugeben.
 
 
 ---
@@ -256,8 +265,9 @@ Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvol
 #### 2. 🚧 What challenges did I face?
 
 
-
-
+Der größte Fehler war der model_validator aus Tag 5 der verlangte dass jede work-Note den Tag "work" enthält. Das hat fast alle Tests zum Scheitern gebracht weil der Testcode ganz normal work-Notes ohne diesen Tag anlegt.
+Danach kamen 500er Fehler – also interne Serverabstürze. Die Fehlermeldung war zwar lang aber eigentlich sehr präzise: AttributeError: 'str' object has no attribute 'name'. Das Problem war dass ich in create_note am Ende note.tags statt db_note.tags verwendet hab.
+Außerdem fehlten in ein paar Endpoints priority und author_email im NoteResponse, was ich beim schrittweisen Erweitern des Codes einfach übersehen hatte.
 
 
 ---
@@ -265,9 +275,10 @@ Einzelne Code Schnippsel wie "assert" oder "request.." recherchiert um nachzuvol
 #### 3. 💡 How did I overcome them?
 
 
-
-
-
+Den model_validator hab ich auskommentiert nachdem ich verstanden hab dass er zwar fachlich Sinn ergibt, aber inkompatibel mit dem Test ist.
+Den 'str' object has no attribute 'name' Fehler hab ich durch genaues Lesen der Fehlermeldung gefunden – da steht exakt Datei und Zeile drin. Sobald ich verstanden hab was der Unterschied zwischen note und db_note in dem Kontext ist, war der Fix eine einzelne Zeile.
+Die fehlenden Felder in NoteResponse hab ich systematisch durch alle Endpoints durchgegangen mit Strg+F nach allen NoteResponse-Stellen geprüft ob priority= und author_email= überall dabei sind.
+Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei durch.
 
 ---
 
