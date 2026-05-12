@@ -27,3 +27,7 @@
   "category": "personal",
   "tags": ["health"]
 }
+
+#Kleines BSp wie man starten kann uv run usw
+#Python Code Schnippsel Notes post/get
+#Applikation starten, wie nutzt man das dann
