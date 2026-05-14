@@ -86,23 +86,23 @@ Bei kleinen Fehlermeldungen AI dazugezogen, meistens reicht aber Template durchl
 
 #### 1. ✅ What did I accomplish?
 
-Wiederholung von grundlegenden Python Kenntnisse wie Datentypen, Funktionen, Dictionaries und Listen - war alles noch ziemlich aktuell im Kopf, aber gut es aufzufrischen
+Wiederholung von grundlegenden Python Kenntnisse wie Datentypen, Funktionen, Dictionaries und Listen - war alles noch gut im Gedächtnis, aber gut es aufzufrischen!
 Create Notes mit eigenen Parametern.
 Kommunikation bzw Abhängigkeit mit dem Json-File - was passiert wenn ich etwas in VSCode ändere auf dem Server und andersrum.
 Wie programmiere ich eigene Notes und rufe diese ab. Im Anschluss daran wie man seine Notes in Kategorien einteilt und ausschließlich diese Kategorie mit den festgelegten anderen Parametern (Title, datetime..) abruft.
-Die Stats der Notes abfragen, indem ich erst die Anzahl der Notes durchzähle (if-schleife) und im Anschluss die Notes by_category ausgebe. So kann ich wenn ich verschiedene Notes für unterschiedliche Themen habe abfragen wieviele es pro Thema bzw. Category sind. Bestimmt kann man im späteren Verlauf noch weitaus mehr abfragen bzw. interessantere Datenabfragen machen.
+Die Stats der Notes abfragen, indem ich erst die Anzahl der Notes durchzähle (if-schleife) und im Anschluss die Notes by_category ausgebe. So kann ich wenn ich verschiedene Notes für unterschiedliche Themen habe abfragen wie viele  pro Thema bzw. Kategorie existieren. Bestimmt kann man im späteren Verlauf noch weitaus mehr abfragen bzw. technisch relevantere Datenabfragen machen.
 
 
 ---
 
 #### 2. 🚧 What challenges did I face?
 
-Überhaupt erstmal in das ganze Thema reinzukommen find ich ziemlich kompliziert da es viel aufeinmal ist. Gerade im Online Unterricht kommt man mitunter nur schwer mit, wenn man andauernd sein Bildschirm switchen muss, schnelle Korrekturen gemacht werden usw.
+Überhaupt erstmal in das ganze Thema reinzukommen find ich ziemlich kompliziert da es viel auf einmal ist. Gerade im Online Unterricht kommt man mitunter nur schwer mit, wenn man andauernd zwischen Fenstern switchen muss, schnelle Korrekturen gemacht werden usw.
 
 Ich hatte zu Beginn Probleme damit zu verstehen, wie die ganzen Zusammenhänge sind mit allen Schnittstellen, mit denen wir gerade arbeiten.
 
 Kleinere Programmierfehler wie zB. das notes_db, _ = load_notes() in die Tasks zu übernehmen war, damit das Programm läuft
-Terminal neu laden nach einer Ausführung war eine kleine Herausforderung, ich konnte da dann immer nicht drauf zugreifen. Str+C hat dann funktioniert um nach einer Änderung wieder uv run.. auszuführen
+Terminal neu laden nach einer Ausführung war eine kleine Herausforderung, ich konnte da dann immer nicht drauf zugreifen. Strg+C hat dann funktioniert um nach einer Änderung wieder uv run.. auszuführen
 
 ---
 
@@ -157,7 +157,7 @@ Zudem fand ich es schwierig zu wissen was ich mit meinen alten Notizen machen so
 
 #### 3. 💡 How did I overcome them?
 
-Die kaputte JSON Datei hab ich gefixt indem ich den Inhalt komplett gelöscht und durch ein leeres Array [] ersetzt habe. DAnn hab ich den Server neu gestartet und die Notes nochmal neu und diesemal einzeln in POST eingegeben.
+Die kaputte JSON Datei hab ich gefixt indem ich den Inhalt komplett gelöscht und durch ein leeres Array [] ersetzt habe. Dann hab ich den Server neu gestartet und die Notes nochmal neu und dieses mal einzeln in POST eingegeben.
 
 Beim 422 Fehler durch mehrfache Notes hab ich verstanden dass man in /docs immer nur eine Note pro Execute eingibt und dann wartet bis die Antwort mit ID und Timestamp zurückkommt bevor man die nächste eingibt.
 Die Reihenfolge der Endpoints hab ich durch Ausprobieren und nachfragen verstanden – FastAPI liest den Code von oben nach unten und nimmt den ersten Treffer, deswegen müssen spezifischere Endpoints immer vor den generischen mit {id} stehen.
@@ -167,7 +167,7 @@ Den ausgegrauten Code in Task 5 hab ich einfach komplett gelöscht, nachdem ich 
 Den Optional Typ und den is not None Check hab ich mir über einen Chatbot erklären lassen.
 Danach bzw. generell hab ich den Code für mich entsprechend kommentiert, damit ich das einerseits nicht vergesse und andererseits auch andere nachvollziehen können was da genau passiert.
 
-Für Task 6 war ich leider ziemlich sehr auf die Hilfe von LLMs angewiesen die mir den Code erklären und wo ich ihn einfügen muss. Nach ein paar Stunden konnte ich den Aufbau und warum man was macht dann doch relativ gut nachvollziehen.
+Für Task 6 war ich teilweise auf die Hilfe von LLMs angewiesen die mir den Code erklären und wo ich ihn einfügen muss. Nach ein paar Stunden konnte ich den Aufbau und warum man was macht dann doch relativ gut nachvollziehen.
 Um zukünftig besser klarzukommen hab ich den gesamten Aufbau dann nochmal verändert und neu kommentiert, damit alles deutlich übersichtlicher für mich ist.
 Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll sich erstmal alle einzelnen Steps anzuschauen und zu verstehen um die spätere Integration im Code sinnvoller zu gestalten bzw. sich im Kopf schon mal Verknüpfungen zu machen wo welcher Codeblock Sinn macht einzufügen.
 
@@ -183,9 +183,9 @@ Ich denke für die zukünftige Abarbeitung von Hausaufgaben ist es auch sinnvoll
 #### 1. ✅ What did I accomplish?
 
 
-Heute habe ich hauptsächlich gelernt wie der Code für Tests aufgebaut ist, und wie man Tests für ein bestehendes Programm schreibt, um zu prüfen wie gut es gegen Dinge wie Grenzfälle/falsche Angaben des Nutzers etc. abgesichert ist. 
+Heute habe ich hauptsächlich gelernt wie der Code für Tests aufgebaut ist, und wie man Tests für ein bestehendes Programm schreibt, um zu prüfen wie gut es gegen Grenzfälle und fehlerhafte Nutzerangaben etc. abgesichert ist. 
 
-Für unsere Anwendungsfälle waren die Libraries pytest,requests und faker wichtig, deren Funktionen ich durch das testen/anwenden verstehen konnte. Zudem konnte ich durch das testen die Statuscodes 200,201,404 und 422 noch einmal verinnerlichen. Darüber hinaus habe ich etwas error handling dazu gelernt durch die aufgetretenen Fehlermeldungen sowie das arbeiten im Terminal (in einem läuft der Server, in einem zweiten lässt man die Tests durchlaufen)
+Für unsere Anwendungsfälle waren die Libraries pytest,requests und faker wichtig, deren Funktionen ich durch das Testen und Anwenden verstehen konnte. Zudem konnte ich durch das testen die Statuscodes 200,201,404 und 422 noch einmal verinnerlichen. Darüber hinaus habe ich etwas error handling dazu gelernt durch die aufgetretenen Fehlermeldungen sowie das arbeiten im Terminal (in einem läuft der Server, in einem zweiten lässt man die Tests durchlaufen)
 
 
 ---
@@ -213,7 +213,7 @@ Besonders geholfen hat mir zudem einfach bewusst falsche Eingaben zu machen, um 
 
 Heute hab ich gelernt, wie man sicherstellt dass die API nur sinnvolle Daten annimmt und schlechte Eingaben direkt ablehnt, bevor sie überhaupt in die Datenbank kommen.
 Konkret hab ich gelernt wie man mit Field() einfache Grenzen setzt wie Mindest- und Maximallängen für Felder wie title, content, category und tags. 
-Darüber hinaus hab ich eigene Validierungsregeln mit @field_validator geschrieben – zum Beispiel dass der Titel nach dem Trimmen noch mindestens 3 Zeichen haben muss, dass nur bestimmte Kategorien erlaubt sind, und dass Tags automatisch in Kleinbuchstaben umgewandelt werden usw.
+Darüber hinaus hab ich eigene Validierungsregeln mit @field_validator geschrieben – zum Beispiel dass der Titel nach dem Trimmen noch mindestens 3 Zeichen haben muss, dass nur bestimmte Kategorien erlaubt sind, und dass Tags automatisch in Kleinbuchstaben umgewandelt werden.
 Mit dem model_validator hab ich dann eine Regel eingebaut die zwei Felder gleichzeitig prüft: wenn die Kategorie "work" ist, muss der Tag "work" mit dabei sein. 
 
 Für das Tag Modell hab ich zusätzlich einen @field_validator eingebaut der sicherstellt dass Tag-Namen nur Kleinbuchstaben, Zahlen und Bindestriche enthalten dürfen. Hier hat mir der Codeaufbau aus der Präsentation mit Pattern nicht funktioniert. Das hab ich dann nach etwas Recherche mit re.match() gelöst wobei ich dann mehrere if-Funktionen benutzt habe um die min und max Länge abzufragen und die erlaubten Zeichen die im Pattern waren abzufragen.
@@ -244,7 +244,7 @@ Den Testfall test_patch_with_empty_body_succeeds hab ich wie gesagt als 200 resp
 
 Den pattern Bug hab ich gelöst indem ich die Validierung in einen field_validator ausgelagert hab und dort re.match() aus der Python Standardbibliothek verwendet hab. Das hab ich separat nachgeschlagen und dann angewendet.
 
-Generell hat mir wieder geholfen die Fehler im Terminal genau zu lesen und Schritt für Schritt vorzugehen – erst den offensichtlichsten Fehler fixen, Server neu starten, schauen was als nächstes kommt, sowie zwei Terminals nebeneinader zu nutzen beim Testen von test_validation.py
+Generell hat mir wieder geholfen die Fehler im Terminal genau zu lesen und Schritt für Schritt vorzugehen – erst den offensichtlichsten Fehler fixen, Server neu starten, schauen was als nächstes kommt, sowie zwei Terminals nebeneinander zu nutzen beim Testen von test_validation.py
 
 
 ---
@@ -254,7 +254,7 @@ Generell hat mir wieder geholfen die Fehler im Terminal genau zu lesen und Schri
 #### 1. ✅ What did I accomplish?
 
 Heute hab ich die bestehende API aus den vorherigen Tagen mit dem  Tests aus der Vorlesung von Day 6 laufen lassen und systematisch alle Fehler behoben, bis die Tests durchgelaufen sind.
-Dabei hab ich wieder einzelne Fehlermeldungen festigen können, generell läuft die Fehlerbehbeung deutlich schneller als an Tag 1, weil man an Erfahrung hinzugewonnen hat.
+Dabei hab ich wieder einzelne Fehlermeldungen festigen können, generell läuft die Fehlerbehebung deutlich schneller als an Tag 1, weil man an Erfahrung hinzugewonnen hat.
 Außerdem hab ich verstanden, dass die Reihenfolge der Endpoints für den Durchlauf des Tests wichtig ist. Routen wie /notes/stats müssen immer vor Parametern wie /notes/{note_id} stehen, sonst interpretiert FastAPI den String "stats" als eine ID.
 Den Stats-Endpoint hab ich komplett auf die Datenbank umgestellt, weil er vorher noch auf die alte JSON-Datei zugegriffen hat.
 Für PUT und PATCH hab ich die fehlende Tag-Logik nachgezogen, sodass Tags beim Update auch wirklich ersetzt werden und nicht einfach ignoriert werden. Zusätzlich hab ich in allen NoteResponse-Rückgaben die fehlenden Felder aus Day 5 priority und author_email ergänzt, die ich beim Erweitern der Endpoints vergessen hatte mitzugeben.
@@ -311,7 +311,7 @@ Bei den verschiedenen Funktionen wie st.selectbox, st.text_area, st.slider, st.e
 #### 3. 💡 How did I overcome them?
 
 Ich hab parallel mit einem YouTube Video gearbeitet das Streamlit Grundlagen gezeigt hat, das hat mir geholfen die Komponenten schneller zu verstehen als nur durch die Dokumentationen im Internet. Das Aufteilen des ID-Titel-Strings hab ich mit .split(":") gelöst, also indem ich den String am Doppelpunkt trenne und nur den ersten Teil als ID nehmen.
-Insgesamt hat mir dieser Tag mit Abstand am meisten Spaß gemacht weil man zum ersten Mal wirklich sieht wie die API die man gebaut hat in einer echten optisch ansprechenden Oberfläche zum Leben erwacht. Der direkte visuelle Feedback macht das ganze viel greifbarer als nur Requests in /docs auszuführen.
+Insgesamt hat mir dieser Tag mit Abstand am meisten Spaß gemacht weil man zum ersten Mal wirklich sieht wie die API die man gebaut hat in einer echten optisch ansprechenden Benutzeroberfläche zum Leben erwacht. Der direkte visuelle Feedback macht das ganze viel greifbarer als nur Requests in /docs auszuführen.
 
 
 
@@ -325,6 +325,11 @@ Insgesamt hat mir dieser Tag mit Abstand am meisten Spaß gemacht weil man zum e
 
 Heute war ausschließlich die Besprechung zu den hochzuladenden Dateien für die Benotung und den damit zusammenhängenden Formalitäten.
 
+Zuhause: Heute hab ich gelernt wie man eine professionelle README Datei für ein GitHub Projekt aufbaut. Eine README ist die erste Seite die jemand sieht wenn er dein Repository öffnet – sie erklärt was das Projekt macht, wie man es installiert und wie man es benutzt.
+Konkret hab ich gelernt wie Markdown als Formatierungssprache funktioniert. Mit --- erstellt man horizontale Trennlinien zwischen Abschnitten, mit ``` kennzeichnet man Code-Blöcke die GitHub mit fester Schriftart und grauem Hintergrund darstellt. Durch Angabe der Sprache direkt nach den Backticks wie ```json oder ```bash aktiviert man Syntax-Highlighting, das den Code automatisch einfärbt und lesbarer macht.
+Für den Aufbau selbst hab ich mich an zwei bereits bestehenden ReadMe Files orientiert und dabei verstanden welche Abschnitte in eine gute README gehören, wie: eine kurze Projektbeschreibung, Badges, Features, Installationsanleitung, Terminal-Befehle zum Starten, eine Übersicht der API Endpoints, Erklärung der Datenmodelle und Key Code Concepts und diese in meinem ReadMe implementiert.
+Außerdem hab ich gelernt wie man Screenshots ins README einbindet. Dafür muss man einen assets Ordner im Projektverzeichnis anlegen, die Screenshots dort als .png speichern, sie mit Git committen und pushen und dann per ![Beschreibung](assets/dateiname.png) im README ansprechen. Badges wie die Python oder FastAPI Version kann man dagegen direkt von shields.io einbinden.
+
 
 
 ---
@@ -333,7 +338,7 @@ Heute war ausschließlich die Besprechung zu den hochzuladenden Dateien für die
 
 
 
-/
+Eigentlich so gut wie keine Herausforderungen, durch die Orientierung an bereits bestehenden ReadMe Dateien anderer Nutzer war die Umsetzung relativ einfach und hat Spaß gemacht.
 
 
 ---
@@ -341,8 +346,8 @@ Heute war ausschließlich die Besprechung zu den hochzuladenden Dateien für die
 #### 3. 💡 How did I overcome them?
 
 
-
 /
+
 
 
 ---
