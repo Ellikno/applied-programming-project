@@ -45,6 +45,8 @@ Key advantages:
 ---
 
 ## 🗂️ Project Structure
+
+```
 note-api/
 ├── main.py              # FastAPI backend — all endpoints and database models
 ├── frontend.py          # Streamlit frontend — web interface
@@ -53,9 +55,9 @@ note-api/
 ├── data/
 │   └── notes.json       # Legacy JSON storage from Day 2 (kept for reference)
 └── README.md
+```
 
-######################################################################################################
-######################################################################################################
+---
 
 ## ⚙️ Installation
 
@@ -109,12 +111,14 @@ uv run pytest test_notes_api.py -v
 ```
 
 Expected output:
-                #test_notes_api.py::test_create_note          PASSED
-                #test_notes_api.py::test_get_all_notes        PASSED
-                #test_notes_api.py::test_delete_note          PASSED
 
-######################################################################################################
-######################################################################################################
+```
+test_notes_api.py::test_create_note          PASSED
+test_notes_api.py::test_get_all_notes        PASSED
+test_notes_api.py::test_delete_note          PASSED
+```
+
+---
 
 
 ## 📡 API Endpoints
@@ -159,15 +163,14 @@ Expected output:
 All parameters are optional and can be combined.
 
 
-######################################################################################################
-######################################################################################################
+---
 
 
 ## 📋 Data Models
 
 ### NoteCreate (Input)
 
-```python
+```json
 {
   "title": "Team Meeting",        # required, 3–100 chars
   "content": "Discuss Q2 goals",  # required, 1–10000 chars
@@ -176,9 +179,10 @@ All parameters are optional and can be combined.
   "priority": 3,                  # optional, 1–5 (default: 3)
   "author_email": "user@uni.de"   # optional, must be valid email format
 }
+```
 
 ### NoteResponse (Output)
-
+```json
 {
   "id": 1,
   "title": "Team Meeting",
@@ -213,8 +217,8 @@ The API uses Pydantic to validate all incoming data. Invalid requests return HTT
   transforms into→ ["urgent", "meeting", "q2"]
 
 
-######################################################################################################
-######################################################################################################
+---
+
 
 ## 🗄️ Database Architecture
 
