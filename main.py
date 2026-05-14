@@ -29,6 +29,11 @@ def root():
 
 ###########################
 
+# NoteTagLink ist eine Verbindungstabelle zwischen Notes und Tags (Many-to-Many)
+# Eine Note kann mehrere Tags haben, ein Tag kann aber auf mehreren Notes sein
+# SQLModel erstellt diese Tabelle nicht automatisch (Versions-Problem), deswegen
+# wird sie hier explizit definiert.
+
 class NoteTagLink(SQLModel, table=True):
    note_id: Optional[int] = Field(default=None, foreign_key="notes.id", primary_key=True)
    tag_id: Optional[int] = Field(default=None, foreign_key="tags.id", primary_key=True)
@@ -83,11 +88,18 @@ def get_session():
         yield session
 
 # Type alias for cleaner code
+#SessionDep ist eine Abkürzung damit man nicht jedes Mal den vollen Typ ausschreiben muss
+# Depends(get_session) sagt FastAPI: erstelle für jeden Request eine neue Session
+# und schließe sie danach automatisch wieder
+# Annotated verknüpft den Typ Session mit der Depends-Anweisung zu einem einzigen Parameter
 SessionDep = Annotated[Session, Depends(get_session)]
+#Aus Vorlesungsfolie Day 3:
 #FastAPI will automatically:
     #Create a new session for each request
     #Close the session when done
     #Handle database transactions
+
+
 
 #########################################
 ##### API Schemas (Pydantic Models)
@@ -179,6 +191,7 @@ class NoteUpdate(BaseModel):
     content: str | None = Field(default=None, min_length=1)
     category: str | None = None
     tags: list[str] | None = Field(default=None, max_length=10)
+    priority: int | None = Field(default=None, ge=1, le=5)
 # Datentyp | None bedeutet: Entweder Datentyp x wie zB. string oder None. 
 #Wenn ein str mitgeschickt wird, greift die Field Regel für zB. den Titel nach dem in der Präsentation
 #erklärten Prinzip: PATCH with {} must succeed (no changes). PATCH with {"title": ""} must return 422 (Field check passt).
@@ -201,9 +214,15 @@ class NoteResponse(BaseModel):
         from_attributes = True
 
 #########################################
-##### Legacy JSON Storage (Day 2)
+##### JSON Storage (Day 2)
 #########################################
 #Hilfsfunktionen für die ursprüngliche JSON-basierte Speicherung
+
+# load_notes() und save_notes() sind die ursprünglichen Hilfsfunktionen aus Day 2 Step 12+13
+# seit Day 3 Task 6 (Datenbank Einführung) werden sie nicht mehr für die Haupt-Endpoints verwendet
+# Sie sind noch drin weil /notes/legacy und /notes/stats sie noch nutzen
+# und um den Entwicklungsfortschritt von JSON-Datei zu Datenbank nachvollziehbar für mich
+# zu machen
 
 NOTES_FILE = Path("data/notes.json")
 
@@ -238,7 +257,7 @@ def save_notes(notes_db):
 ##### Note API Endpoints
 #########################################
 
-#Task 6 Step 5 Überarbeitung:
+#Day 3 Task 6 Step 5 Überarbeitung:
 @app.post("/notes", status_code=201)
 def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
     """Create a new note in database"""
@@ -263,6 +282,12 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
             continue
         
         seen_tags.add(tag_name_lower)
+
+        # Erst prüfen ob der Tag bereits in der Datenbank existiert
+        # Wenn ja: bestehenden Tag nehmen statt einen neuen anzulegen
+        # Wenn nein: neuen Tag erstellen
+        # Das verhindert Duplikate in der Tags-Tabelle – "urgent" soll
+        # nur einmal existieren egal wie viele Notes diesen Tag haben
         
         # Find existing tag or create new one
         statement = select(Tag).where(Tag.name == tag_name_lower)
@@ -279,7 +304,10 @@ def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
     
     session.add(db_note)
     session.commit()
-    session.refresh(db_note)  # Get the generated ID and load relationships
+    # Nach dem commit kennt die Datenbank die generierte ID und alle verknüpften Tags
+    # session.refresh() holt diese aktualisierten Daten zurück ins Python-Objekt
+    # Ohne refresh() hätte db_note noch keine ID und note.tags wäre leer
+    session.refresh(db_note) 
     
     # Convert to response model
     return NoteResponse(
@@ -363,6 +391,9 @@ def get_notes_stats(session: SessionDep):
 
     tag_counts = Counter(all_tags)
 
+    #Alle Tags direkt holen:
+    all_unique_tags = session.exec(select(Tag)).all()
+
     top_tags = [
         {"tag": tag, "count": count}
         for tag, count in tag_counts.most_common(5)
@@ -372,10 +403,10 @@ def get_notes_stats(session: SessionDep):
         "total_notes": len(notes),
         "by_category": dict(category_counts),
         "top_tags": top_tags,
-        "unique_tags_count": len(tag_counts)
+        "unique_tags_count": len(all_unique_tags)
 
     #zählt alle Notizen, Notizen pro Kategorie, Welche tags am häufigsten vorkommen
-    # wie viele verschiedene tags es überhaupt gibt
+    # und wie viele verschiedene tags es überhaupt in der DB gibt
     }
 
 

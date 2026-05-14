@@ -118,8 +118,8 @@ Wenn es mal überhaupt nicht lief, hab ich meinen Code Gemini gegeben und gefrag
 
 #### 1. ✅ What did I accomplish?
 
-REST API Design Prinzipien kennengelernt – also warum man URLs so aufbaut wie man sie aufbau und was der Unterschied zwischen Path- und Query-Parametern ist.
-Den bestehenden Note API Code von Tag 2 schrittweise erweitert um vollständiges CRUD – also nicht nur erstellen und lesen, sondern jetzt auch updaten und löschen. PUT ersetzt dabei immer die komplette Note, PATCH nur die Felder die man mitschickt, wie bei mir zB. der title.
+Heute habe ich REST API Design Prinzipien kennengelernt, sprich warum man URLs so aufbaut wie man sie aufbaut und was der Unterschied zwischen Path- und Query-Parametern ist.
+Den bestehenden Note API Code von Tag 2 schrittweise erweitert um vollständiges CRUD. Also nicht nur erstellen und lesen, sondern jetzt auch updaten und löschen. PUT ersetzt dabei immer die komplette Note, PATCH nur die Felder die man mitschickt, wie bei mir zB. der title.
 
 Tags als neues Feld eingebaut – der Unterschied zu Category ist dass eine Note mehrere Tags haben kann aber nur eine Category. - > neue Möglichkeiten zu filtern/mehr Details einzubringen.
 
@@ -201,7 +201,7 @@ Auch das Zusammenspiel zwischen dem laufenden Server, der Testdatei und dem Term
 
 #### 3. 💡 How did I overcome them?
 
-Ich habe viel mit den Beispielen aus den Präsentationsfolien gearbeietet und versucht die Beispiele nachzuvollziehen und im Anschluss auf meine Fälle anzuwenden. Dabei hat mir geholfen erstmal mit sehr einfachen Tests zu starten und mich dann graduell zu steigern.
+Ich habe viel mit den Beispielen aus den Präsentationsfolien gearbeitet und versucht die Beispiele nachzuvollziehen und im Anschluss auf meine Fälle anzuwenden. Dabei hat mir geholfen erstmal mit sehr einfachen Tests zu starten und mich dann graduell zu steigern.
 Begriffe wie assert oder requests habe ich separat nachgeschlagen oder mir den Zusammenhang des Testcodes mit meiner main.py von einem LLM erklären lassen.
 Besonders geholfen hat mir zudem einfach bewusst falsche Eingaben zu machen, um zu schauen ob die von mir erwarteten Statuscodes und Fehlermeldungen zurückkommen.
 
@@ -289,7 +289,10 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 #### 1. ✅ What did I accomplish?
 
 
-
+Heute hab ich zum ersten Mal eine richtige Benutzeroberfläche für meine Notizen API mit Streamlit gebaut.
+Für die Hausaufgabe hab ich dann zwei Funktionen in meiner Streamlit App umgesetzt:
+Funktion 1 – Alle Notizen anzeigen: Die App holt alle Notizen über einen GET Request von meiner API und zeigt sie als Selectbox an – also als Dropdown mit ID und Titel. Wenn man eine Note auswählt, kann man über einen aufklappbaren Bereich (st.expander) den gesamten Inhalt sehen: Titel, Inhalt, Kategorie, Tags, Priorität und Erstelldatum.
+Funktion 2 – Neue Notiz erstellen: Mit st.form hab ich ein Formular gebaut das alle Felder gesammelt abschickt wenn man den Submit-Button drückt. Titel und Inhalt sind Textfelder, die Kategorie eine Selectbox mit den erlaubten Werten, Tags kann man kommagetrennt eingeben und die Priorität lässt sich über einen Slider von 1 bis 5 auswählen. Nach erfolgreichem Erstellen lädt die Seite automatisch neu über st.rerun() damit die neue Notiz direkt in der Liste erscheint.
 
 
 
@@ -298,7 +301,8 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 #### 2. 🚧 What challenges did I face?
 
 
-
+Schwer gefallen ist mir eigentlich nichts, es hat eigentlich hauptsächlich nur Zeit in Anspruch genommen die einzelnen Streamlit Komponenten zu finden und sich einzulesen. 
+Bei den verschiedenen Funktionen wie st.selectbox, st.text_area, st.slider, st.expander musste ich jeweils schauen welche davon für meinen Anwendungsfall passt und wie man sie richtig einsetzt. Ein kleinerer Stolperstein war das Trennen der ausgewählten Note aus der Selectbox – da steht der String "1: Titel" drin und ich musste die ID wieder rausfiltern um damit den richtigen Notizeninhalt zu finden. Das war kein großes Problem, hat aber durchaus etwas Zeit gebraucht in Code umzusetzen.
 
 
 
@@ -306,7 +310,8 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 #### 3. 💡 How did I overcome them?
 
-
+Ich hab parallel mit einem YouTube Video gearbeitet das Streamlit Grundlagen gezeigt hat, das hat mir geholfen die Komponenten schneller zu verstehen als nur durch die Dokumentationen im Internet. Das Aufteilen des ID-Titel-Strings hab ich mit .split(":") gelöst, also indem ich den String am Doppelpunkt trenne und nur den ersten Teil als ID nehmen.
+Insgesamt hat mir dieser Tag mit Abstand am meisten Spaß gemacht weil man zum ersten Mal wirklich sieht wie die API die man gebaut hat in einer echten optisch ansprechenden Oberfläche zum Leben erwacht. Der direkte visuelle Feedback macht das ganze viel greifbarer als nur Requests in /docs auszuführen.
 
 
 
@@ -318,7 +323,7 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 #### 1. ✅ What did I accomplish?
 
 
-
+Heute war ausschließlich die Besprechung zu den hochzuladenden Dateien für die Benotung und den damit zusammenhängenden Formalitäten.
 
 
 
@@ -328,7 +333,7 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 
 
-
+/
 
 
 ---
@@ -337,7 +342,7 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 
 
-
+/
 
 
 ---
@@ -348,7 +353,7 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 
 
-
+/
 
 
 ---
@@ -357,7 +362,7 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 
 
-
+/
 
 
 ---
@@ -367,13 +372,13 @@ Nachdem ich diese kleinen Anpassungen gemacht habe lief der Test einwandfrei dur
 
 
 
-
+/
 
 ---
 
 
 # 🎉 Congratulations! You did it! 🎓✨
-
+#:D
 
 
 

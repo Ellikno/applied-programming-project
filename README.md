@@ -82,7 +82,7 @@ The API will be available at:
 - API: `http://127.0.0.1:8000`
 - Interactive docs: `http://127.0.0.1:8000/docs`
 
-> 📸 **Screenshot tip:** Insert a screenshot of your `/docs` page here
+![API Docs](assets/docs.png)
 
 **Start the Streamlit frontend** (in a second terminal):
 ```bash
@@ -91,7 +91,7 @@ uv run streamlit run frontend.py
 
 The frontend will be available at `http://localhost:8501`
 
-> 📸 **Screenshot tip:** Insert a screenshot of your Streamlit frontend here
+![Streamlit Frontend](assets/frontend.png)
 
 ---
 
@@ -222,7 +222,7 @@ The app uses **SQLite** via SQLModel
 
 The `notetaglink` table enables the **Many-to-Many** relationship between notes and tags — one note can have many tags, and one tag can belong to many notes.
 
-> 📸 **Screenshot tip:** Insert a screenshot of your `notes.db` opened in the SQLite Viewer VSCode extension here
+![Database](assets/database.png)
 
 ---
 
