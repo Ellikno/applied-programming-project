@@ -148,6 +148,51 @@ test_notes_api.py::test_delete_note          PASSED
 | `GET` | `/categories` | List all unique categories |
 | `GET` | `/categories/{category_name}/notes` | Get all notes in a category |
 
+
+---
+
+## 🔄 CRUD Operations
+
+**Create** — POST a new note:
+```python
+@app.post("/notes", status_code=201)
+def create_note(note: NoteCreate, session: SessionDep) -> NoteResponse:
+    db_note = Note(title=note.title, content=note.content, category=note.category)
+    session.add(db_note)
+    session.commit()
+    session.refresh(db_note)
+    return NoteResponse(...)
+```
+
+**Read** — GET with optional filters:
+```python
+@app.get("/notes")
+def list_notes(session: SessionDep, category: str = None, search: str = None, tag: str = None):
+    statement = select(Note)
+    if category:
+        statement = statement.where(Note.category == category)
+    notes = session.exec(statement).all()
+```
+
+**Update** — PATCH updates only provided fields:
+```python
+@app.patch("/notes/{note_id}")
+def partial_update_note(note_id: int, note_update: NoteUpdate, session: SessionDep):
+    note = session.get(Note, note_id)
+    if note_update.title is not None:
+        note.title = note_update.title   # only update if provided
+    session.commit()
+```
+
+**Delete** — DELETE returns 204 No Content:
+```python
+@app.delete("/notes/{note_id}", status_code=204)
+def delete_note(note_id: int, session: SessionDep):
+    note = session.get(Note, note_id)
+    session.delete(note)
+    session.commit()
+```
+
 ---
 
 ## 🔍 Query Parameters (GET /notes)
@@ -305,4 +350,6 @@ The frontend connects to the running FastAPI backend at `http://localhost:8000`.
 
 ## 📨 Contact
 
-Don,t ;D
+This project was built as part of the Applied Programming module at HS Coburg.  
+Please note that this is a student submission created for assessment purposes only.
+It may contain errors and should not be used as a reference for entrepreneurial implementation.
