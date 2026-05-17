@@ -19,7 +19,6 @@ app=FastAPI(
 ##### Database Models and Configuration
 #########################################
 # Definition der Datenbank-Tabellen und Beziehungen
-#Anderes Setup als in den Folien zu Präsentation Day 3, da das angegebene nicht funktioniert hat (Hat wohl etwas mit der Version von SQL zu tun.)
 
 
 #Anpassung Day 6 Test
@@ -662,6 +661,10 @@ def list_notes_legacy(
     print(NOTES_FILE.resolve())
     return filtered
 
+
+
+
+
 #########################################
 ##### Vorlesung Tag 3
 #########################################
@@ -694,5 +697,5 @@ def queryparameters(param1: str=None, param2: int=None) -> dict:
         "namen":namen_gefiltert
     }
 
-#Passende Restriktionen einbauen aus Day 5 Präsi
+
 
